@@ -1,61 +1,108 @@
 import streamlit as st
-from presentation.sql import get_db_connection
-from home.home import home
-import hashlib  # Pour le hachage des mots de passe
+import pandas as pd
+import altair as alt
+from urllib.error import URLError
 
-def presentation():
-    db_connection = get_db_connection()
-    cursor = db_connection.cursor()
+import hydralit as hy
 
-    st.sidebar.title("Menu")
-    menu = ["Inscription", "Connexion"]
-    choice = st.sidebar.selectbox("Choix", menu)
+app = hy.HydraApp(
+    title='Secure Hydralit Data Explorer',
+    favicon="🚀",
+    hide_streamlit_markers=True,
+    use_navbar=True,
+    navbar_sticky=True
+)
 
-    if choice == "Inscription":
-        st.title("Page Inscription")
+# Fonction pour créer une carte HTML
+def create_card(title, description):
+    return f"""
+    <div class="card">
+        <h3>{title}</h3>
+        <p>{description}</p>
+    </div>
+    """
 
-        with st.form(key='inscription_form'):
-            st.subheader("Formulaire d'Inscription")
-            nom = st.text_input("Nom")
-            prenom = st.text_input("Prénom")
-            email = st.text_input("Email")
-            mot_de_passe = st.text_input("Mot de passe", type="password")
-            rmot_de_passe = st.text_input("Répéter le Mot de passe", type="password")
+# Page d'accueil avec des cartes
+@app.addapp()
+def home():
+    st.markdown(
+        """
+        <style>
+        .card {
+            padding: 20px 20px 20px 70px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            background-color: #F4EFEF;
+            transition: box-shadow 0.3s ease;
+        }
+        .card:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
 
-            if mot_de_passe == rmot_de_passe:
-                submitted = st.form_submit_button("S'inscrire")
-            else:
-                st.warning("Les mots de passe ne correspondent pas.")
+    st.title("Accueil")
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown(create_card("Machine Learning 1", "Description ou contenu lié au Machine Learning."))
+    with col2:
+        st.markdown(create_card("Machine Learning 2", "Description ou contenu lié au Machine Learning."))
 
-            if submitted:
-                hashed_password = hashlib.sha256(mot_de_passe.encode()).hexdigest()
-                query = "INSERT INTO utilisateurs (nom, prenom, email, mot_de_passe) VALUES (%s, %s, %s, %s)"
-                values = (nom, prenom, email, hashed_password)  
-                try:
-                    cursor.execute(query, values)
-                    db_connection.commit()
-                    st.success("Données insérées avec succès dans la base de données")
-                except Exception as e:
-                    st.error(f"Erreur lors de l'inscription : {str(e)}")
+# Page modèle 2 avec formulaire interactif
+@app.addapp(title='Modèle 2')
+def model2():
+    st.title("Modèle 2")
+    with st.form("my_form"):
+        st.write("À l'intérieur du formulaire")
+        slider_val = st.slider("Curseur du formulaire")
+        checkbox_val = st.checkbox("Case à cocher du formulaire")
+        annee_naissance = st.slider("Année de naissance :", 1960, 2024)
+        numero_tel = st.number_input("Numéro de téléphone")
+        
+        if 770000000 <= numero_tel <= 779999999:
+            st.write("Le numéro de téléphone est valide.")
+        else:
+            st.warning("Le numéro de téléphone n'est pas valide.")
 
-    elif choice == "Connexion":
-        st.title("Page Connexion")
-        with st.form(key='connexion_form'):
-            st.subheader("Formulaire de Connexion")
-            email = st.text_input("Email")
-            mot_de_passe = st.text_input("Mot de passe", type="password")
+        submitted = st.form_submit_button("Envoyer")
+        if submitted:
+            st.write("Curseur :", slider_val, "Case à cocher :", checkbox_val)
+            st.write("Année de naissance :", annee_naissance)
 
-            submitted = st.form_submit_button("Se Connecter")
-            if submitted:
-                hashed_password = hashlib.sha256(mot_de_passe.encode()).hexdigest()
-                query = "SELECT * FROM utilisateurs WHERE email = %s AND mot_de_passe = %s"
-                values = (email, hashed_password)
-                cursor.execute(query, values)
-                result = cursor.fetchone()
-                if result:
-                    st.success("Connexion réussie !")
-                    home()
-                else:
-                    st.error("Connexion échouée. Email ou mot de passe incorrect.")
+# Page modèle 3 avec graphiques interactifs
+@app.addapp(title='Modèle 3')
+def model3():
+    st.title("Modèle 3")
+    AWS_BUCKET_URL = "https://streamlit-demo-data.s3-us-west-2.amazonaws.com"
+    try:
+        df = pd.read_csv(AWS_BUCKET_URL + "/agri.csv.gz").set_index("Region")
+        countries = st.multiselect(
+            "Sélectionnez des pays", list(df.index), ["China", "United States of America"]
+        )
+        if not countries:
+            st.error("Veuillez sélectionner au moins un pays.")
+        else:
+            data = df.loc[countries] / 1000000.0
+            st.write("### Production agricole brute ($B)", data.sort_index())
 
-    db_connection.close()
+            data = data.T.reset_index()
+            data = pd.melt(data, id_vars=["index"]).rename(
+                columns={"index": "année", "value": "Production agricole brute ($B)"}
+            )
+            chart = (
+                alt.Chart(data)
+                .mark_area(opacity=0.3)
+                .encode(
+                    x="année:T",
+                    y=alt.Y("Production agricole brute ($B):Q", stack=None),
+                    color="Region:N",
+                )
+            )
+            st.altair_chart(chart, use_container_width=True)
+    except URLError as e:
+        st.error(f"Erreur de connexion : {e.reason}")
+
+app.run()
