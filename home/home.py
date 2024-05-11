@@ -1,4 +1,5 @@
 #when we import hydralit, we automatically get all of Streamlit
+from datetime import time
 import hydralit as hy
 import streamlit as st
 import hydralit_components as hc
@@ -94,9 +95,35 @@ def home():
 # @app.addapp(title='AI_n_BD', icon="🥰")
 def Accueil():
     hy.info('Hello form accueil')
-@app.addapp(title='Modele 2')
+    st.sidebar.title("Navigation")
+
+    def show_model1():
+        st.write("Contenu du Modèle 1")
+
+    def show_model_2():
+        st.write("Contenu du Modèle 2")
+
+    def show_model_3():
+        st.write("Contenu du Modèle 3")
+
+    def show_model_4():
+        st.write("Contenu du Modèle 4")
+        
+    selected_model = st.sidebar.radio("Choisir un modèle", ["presentation", "Modèle 2", "Modèle 3", "Modèle 4"])
+
+    if selected_model == "presentation":
+        show_model1()
+    elif selected_model == "Modèle 2":
+        show_model_2()
+    elif selected_model == "Modèle 3":
+        show_model_3()
+    elif selected_model == "Modèle 4":
+        show_model_4()
+
+
+@app.addapp(title='formulaire')
 def model2():
-    hy.info('Hello form modele 2')# st.write(nom_list)
+    hy.info('Hello form formulaire')# st.write(nom_list)
     with st.form("my_form"):
         st.write("Inside the form")
         slider_val = st.slider("Form slider")
@@ -124,10 +151,10 @@ def model2():
 #   st.write("Please select a model from the sidebar.")
 
 
-# Page modèle 3 avec graphiques interactifs
-@app.addapp(title='Modèle 3')
+# Page dataframe avec graphiques interactifs
+@app.addapp(title='dataframe')
 def model3():
-    st.title("Modèle 3")
+    st.title("dataframe")
     AWS_BUCKET_URL = "https://streamlit-demo-data.s3-us-west-2.amazonaws.com"
     try:
         df = pd.read_csv(AWS_BUCKET_URL + "/agri.csv.gz").set_index("Region")
@@ -156,10 +183,10 @@ def model3():
             st.altair_chart(chart, use_container_width=True)
     except URLError as e:
         st.error(f"Erreur de connexion : {e.reason}")
-# Page modèle 4 avec graphiques interactifs
-@app.addapp(title='Modèle 4')
+# Page graphe avec graphiques interactifs
+@app.addapp(title='graphe')
 def model4():
-    st.title("Modèle 4")
+    st.title("graphe")
     progress_bar = st.sidebar.progress(0)
     status_text = st.sidebar.empty()
     last_rows = np.random.randn(1, 1)

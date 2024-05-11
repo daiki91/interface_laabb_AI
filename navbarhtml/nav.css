@@ -1,0 +1,146 @@
+
+.navbar{
+    position: fixed;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;   
+    height: 11vh;
+    width: 100%;
+    background-color: #ADD8E6;
+    z-index: 4;
+    box-shadow: 0 0.5px 1px #fff;
+    top: 0; 
+    right: 0; 
+    left : 0;
+    border-bottom-left-radius: 4rem;
+}
+.logo-beng-nav {
+    box-shadow: none;  
+    max-width: 55%; 
+    height: auto;  
+ 
+}
+.nav-menu{
+    min-width:  74%;
+    max-width: 74%;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    gap: 1rem;
+    margin-right: 10rem;
+    overflow: hidden;
+    height:11vh;
+}
+.nav-item{
+    list-style: none;
+    width: 100%;
+}
+.nav-links{
+    font-weight: bold;
+    display: block;
+    text-decoration: none;
+    color: rgb(244, 124, 80);
+    position: relative;   
+    text-align: center;
+    font-size: 1.4rem;
+    border-bottom:4px solid transparent;
+    height: 11vh !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;  
+    font-weight: bold;
+    
+}
+.nav-links:hover{
+    -moz-transition: all .4s ease-in-out;
+    -webkit-transition: all .4s ease-in-out;
+    -ms-transition: all .4s ease-in-out;
+    -o-transition: all .4s ease-in-out;
+    transition: all .4s ease-in-out;
+}
+.nav-links:hover{
+    background-color: #dfe7f2;
+    border-bottom:6px solid rgb(105, 105, 189);
+    color: orangered;
+}
+
+
+.nav__toggler div{
+    width: 2.5rem;
+    height: 0.2rem;
+    background-color:rgb(15, 15, 58) ;
+    /*margin-right: 0px;*/
+    margin: 0.4rem;
+    transition: 0.6s ease-in;
+}
+.nav__bars div{
+    width: 2.3rem;
+    height: 0.15rem;
+    background-color:rgb(116, 116, 210) ;
+    /*margin-top: 0px;*/
+    /*margin: 0.4rem;*/
+    transition: 0.6s ease-in;
+}
+.nav__bars .line1{
+    margin-bottom: -8px;
+    margin-left: 4px;
+}
+.nav__toggler{
+    cursor: pointer;
+    display: none;   
+}
+.nav__bars{
+    cursor: pointer;
+    margin-left: 230px;
+    display: none;
+}
+@media screen and (max-width: 768px) {
+    .logo-beng-nav{
+        max-width: 30%;
+    }
+    .nav__toggler{
+        display: block;  
+    }   
+    .nav__bars{
+        display: block; 
+        padding-right: 2rem;
+    } 
+    .nav-menu{
+        position: fixed; 
+        top: 7vh;
+        right: 0;
+        width: 70%;
+        max-width: 300px;
+        height: 90vh;
+        background-color: #fff;
+        flex-direction: column;
+        transform: translateX(100%);
+        transition: 0.7s ease-in;  
+        overflow-y: auto;     
+        margin-right: 0;
+    }
+    .active{
+        transform: translateX(0);
+    }
+}
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+    .logo-beng-nav{
+        max-width: 65%;
+    }
+    .nav-menu{
+        margin-right: 4rem;
+    }
+}
+
+.nav__bars .line1{
+    transform: rotate(50deg) translate(-4px, -5px);
+}
+.nav__bars .line2{
+    opacity: 0;
+}
+.nav__bars .line3{
+    transform: rotate(125deg) translate(-4px, -5px);
+}
+
+
+

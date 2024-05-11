@@ -10,12 +10,13 @@ def presentation():
     if db_connection.is_connected():
         print("Connected to MySQL database")
 
-    menu = ["Inscription", "Connection"]
-    choice = st.sidebar.selectbox("Menu", menu)
+    menu = ["Inscription", "Connection", "home"]
+    choice = st.sidebar.selectbox("Menu", menu[0:2])
+    # redirect="false"
 
     if choice == "Inscription":
         st.title("Page Inscription")
-
+        # Logique du formulaire d'inscription
         with st.form(key='inscription_form'):
             st.subheader("Formulaire d'Inscription")
             nom = st.text_input("Nom")
@@ -38,22 +39,25 @@ def presentation():
 
     elif choice == "Connection":
         st.title("Page Connection")
+        # Logique du formulaire de connexion
+
         with st.form(key='connection_form'):
             st.subheader("Formulaire de Connection")
             email = st.text_input("Email (sans le @gmail.com)") + "@gmail.com"
             mot_de_passe = st.text_input("Mot de passe", type="password")
-
             submitted = st.form_submit_button("Se Connecter")
-            if submitted:
+            # Si la connexion réussit, rediriger vers home()
+            if submitted:  # Assurez-vous de définir submitted dans votre logique de connexion
                 query = "SELECT * FROM utilisateurs WHERE email = %s AND mot_de_passe = %s"
                 values = (email, mot_de_passe)
                 cursor.execute(query, values)
                 result = cursor.fetchone()
                 if result:
                     st.success("Connexion réussie !")
-                    home()
-
-                else:
-                    st.error("Connexion échouée. Email ou mot de passe incorrect.")
-
+                    st.experimental_set_query_params(redirect="true")  # Rediriger vers la page d'accueil
+    
     db_connection.close()
+
+    # Redirection vers la page d'accueil si le paramètre redirect est présent dans l'URL
+    if st.experimental_get_query_params().get("redirect") == "true":
+        home()
