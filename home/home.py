@@ -2,6 +2,7 @@
 import hydralit as hy
 import streamlit as st
 import hydralit_components as hc
+from accueil import Accueil
 # from sidebar.sidebar import get_selected_model
 
 
@@ -10,12 +11,24 @@ app = hy.HydraApp(title='Secure Hydralit Data Explorer',
                   use_navbar=True, navbar_sticky=True,
                 #   banner_spacing=[30,20,40,30,10]
                   )
+def navbar():
+    st.markdown("""
+    <style>
+    .navbar {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+    st.markdown('<div class="navbar"></div>', unsafe_allow_html=True)
+
+# Ajouter le navbar à chaque page de l'application
+#app.add_app_decorator(navbar)
 
 @app.addapp()
+
 def home():
-    # image lambtech
-    # st.image('./iibs.png')
-    # Définition du style CSS pour les cartes
     st.markdown(
         """
         <style>
@@ -33,6 +46,7 @@ def home():
         """,
         unsafe_allow_html=True
     )
+
 
     col1, col2 = st.columns(2)
     with col1:
@@ -88,7 +102,7 @@ def home():
 @app.addapp(title='Accueil')
 # @app.addapp(title='AI_n_BD', icon="🥰")
 def model1():
-    hy.info('Hello form accueil')
+     Accueil()
 @app.addapp(title='Modele 2')
 def model2():
     hy.info('Hello form modele 2')
