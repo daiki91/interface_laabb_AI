@@ -6,6 +6,9 @@ from urllib.error import URLError
 import pandas as pd
 import altair as alt
 import numpy as np
+import folium
+from streamlit_folium import folium_static
+from urllib.error import URLError
 from accueil import Accueil
 
 # from sidebar.sidebar import get_selected_model
@@ -132,22 +135,48 @@ def model2():
 @app.addapp(title='dataset')
 def model6():
     st.title("dataset")
-    # AWS_BUCKET_URL = "https://streamlit-demo-data.s3-us-west-2.amazonaws.com"
-    df = pd.read_csv('iibs_dataM1.csv')
+
     try:
-        df = pd.read_csv( + "/iibs_dataM1.csv.gz").set_index("Region")
+        # Charger le fichier CSV à partir de l'emplacement local ou d'une URL
+        # Assurez-vous que le fichier iibs_dataM1.csv est dans le même répertoire que votre script Python
+        df = pd.read_csv('iibs_dataM1.csv').set_index(["Area", "Item", "Year"])
+
+        # Convertir les colonnes nécessaires en numériques si elles ne le sont pas déjà
+        numeric_columns = ["hg/ha_yield", "average_rain_fall_mm_per_year", "pesticides_tonnes", "avg_temp"]
+        df[numeric_columns] = df[numeric_columns].apply(pd.to_numeric, errors="coerce")
+
+        # Nettoyer les données en remplaçant les valeurs non numériques par NaN
+        df_cleaned = df.apply(pd.to_numeric, errors="coerce")
+
+        # Sélection des régions à afficher
         countries = st.multiselect(
-            "Sélectionnez des Regions", list(df.index), ["dakar", "United States of America"]
+            "Sélectionnez des Régions", df_cleaned.index.levels[0], []
         )
         if not countries:
-            st.error("Veuillez sélectionner au moins un pays.")
+            st.error("Veuillez sélectionner au moins une région.")
         else:
-            data = df.loc[countries] / 1000000.0
+            data = df_cleaned.loc[countries] / 1000000.0
             st.write("### Production agricole brute ($B)", data.sort_index())
 
-            data = data.T.reset_index()
-            data = pd.melt(data, id_vars=["index"]).rename(
-                columns={"index": "année", "value": "Production agricole brute ($B)"}
+            # Création de la carte du Sénégal avec les différentes régions
+            senegal_map = folium.Map(location=[14.4974, -14.4524], zoom_start=7)
+            regions_layer = folium.FeatureGroup(name='Regions')
+
+            for region in countries:
+                region_data = df_cleaned.loc[region]
+                region_popup = f"{region}: {region_data['hg/ha_yield']} hg/ha_yield"
+                folium.Marker(
+                    location=[14.4974, -14.4524],
+                    popup=region_popup,
+                    icon=folium.Icon(color='blue', icon='info-sign')
+                ).add_to(regions_layer)
+
+            senegal_map.add_child(regions_layer)
+            senegal_map.add_child(folium.LayerControl())
+            folium_static(senegal_map)
+
+            data = data.reset_index().melt(id_vars=["Year"], value_vars=numeric_columns).rename(
+                columns={"Year": "année", "value": "Production agricole brute ($B)"}
             )
             chart = (
                 alt.Chart(data)
@@ -155,7 +184,7 @@ def model6():
                 .encode(
                     x="année:T",
                     y=alt.Y("Production agricole brute ($B):Q", stack=None),
-                    color="Region:N",
+                    color="Area:N",
                 )
             )
             st.altair_chart(chart, use_container_width=True)
@@ -185,7 +214,7 @@ def model3():
     try:
         df = pd.read_csv(AWS_BUCKET_URL + "/agri.csv.gz").set_index("Region")
         countries = st.multiselect(
-            "Sélectionnez des pays", list(df.index), ["China", "United States of America"]
+            "Sélectionnez des pays", list(df.index), ["thies", "Matam"]
         )
         if not countries:
             st.error("Veuillez sélectionner au moins un pays.")
