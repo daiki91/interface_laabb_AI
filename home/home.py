@@ -10,6 +10,7 @@ import folium
 from streamlit_folium import folium_static
 from urllib.error import URLError
 from accueil import Accueil
+# from presentation.sql import get_db_connections
 
 # from sidebar.sidebar import get_selected_model
 
