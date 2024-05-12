@@ -5,7 +5,8 @@ from joblib import load
 from assistant import main
 from assistant import risque
 
-
+# def formulaire():
+     
 
 dtr = load('dtr.hdf5')
 preprocesser= load('preprocesser.hdf5')
@@ -34,7 +35,7 @@ def Accueil():
 
         with col1:
             if st.button("Rendement", key="rendement"):
-                st.write("<div style='padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); background-color: #f0f0f0;'><h3>Rendement: 1000 kg/ha</h3></div>", unsafe_allow_html=True)
+                st.write(f"<div style='padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); background-color: #f0f0f0;'><h3>Rendement:  kg/ha</h3></div>", unsafe_allow_html=True)
         
         with col2:
             if st.button("Coûts", key="couts"):
@@ -73,8 +74,14 @@ def Accueil():
                 "Year	types_de_sols	average_rain_fall_mm_per_year	pesticides_tonnes	avg_temp	Area	Item"
                 prediction_yield = prediction(form_data["annee"], form_data["type_sol"], form_data["precip_moy_an"], form_data["pesti_tonne"], form_data["temp_moy"], form_data["Region"], form_data["type_culture"])
                 st.write(f"le rendement prevue est de {prediction_yield [0]} quintaux ou (10^2 Kg)/hectare")
+                return prediction_yield[0]
     def show_model_3():
-            st.write("Contenu du Estimation des Coûts et Revenus")
+            cout = st.number_input("Coût de production (À combien estimez-vous le coût de production total?)")
+            culture_cout = st.number_input("Quel est le prix du marché de la culture? (Prix de vente de la culture)")
+            if st.button("Estimer les coûts et les revenus"):
+                revenu = show_model_2() * culture_cout
+                benefice = revenu - cout
+                st.subheader(f"Le revenu estimé est de :  {revenu} FCFA")
 
     def show_model_4():
             # st.write("Contenu du Recommandations")
