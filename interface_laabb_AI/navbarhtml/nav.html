@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Navbar</title>
+  <link rel="stylesheet" href="nav.css">
+  </head>
+<body>
+  <nav class='navbar'>
+    <a href="/" class='logo-beng'>
+      <img 
+        src='iibs.png'
+        alt='logo-beng'
+        class='logo-beng-nav'
+      />
+    </a>  
+    <ul class='nav-menu'>
+      <li class='nav-item'>
+        <a href='./apropos' class='nav-links'>
+          A propos
+        </a>
+      </li>
+      <li class='nav-item'>
+        <a href='./expertise' class='nav-links'>
+          Expertise
+        </a>
+      </li>
+      <li class='nav-item'>
+        <a href='./candidats' class='nav-links'>
+          Candidats
+        </a>
+      </li>
+      <li class='nav-item'>
+        <a href='./formation' class='nav-links'>
+          Formation
+        </a>
+      </li>
+      
+    </ul>
+    <div class='nav__toggler' onclick='handleClick()'>
+      <div class='line1'></div>
+      <div class='line2'></div>
+      <div class='line3'></div>
+    </div>      
+  </nav>
+
+  <script>
+    const navLinks = document.querySelectorAll('.nav-links');
+    navLinks.forEach(link => {
+      link.addEventListener('click', function() {
+        // Supprimez la classe active-link de tous les liens
+        navLinks.forEach(link => {
+          link.classList.remove('active-link');
+        });
+        // Ajoutez la classe active-link au lien cliqué
+        this.classList.add('active-link');
+      });
+    });
+  </script>
+</body>
+</html>

@@ -6,7 +6,7 @@ def main():
     # selected_model = st.sidebar.radio("Choisir un modèle", ["presentation", "Modèle 2", "Modèle 3", "Modèle 4"])
 
     # if selected_model == "presentation":
-        presentation()
+    presentation()
     # elif selected_model == "Modèle 2":
     #     show_model_2()
     # elif selected_model == "Modèle 3":

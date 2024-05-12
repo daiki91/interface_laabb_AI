@@ -1,7 +1,6 @@
 import streamlit as st
-from presentation.sql import get_db_connection
-from home.home import home
-
+from sql import get_db_connection
+# from home.home import home
 
 def presentation():
     db_connection = get_db_connection()
@@ -10,9 +9,9 @@ def presentation():
     if db_connection.is_connected():
         print("Connected to MySQL database")
 
-    menu = ["Inscription", "Connection", "home"]
-    choice = st.sidebar.selectbox("Menu", menu[0:2])
-    # redirect="false"
+    menu = ["Inscription", "Connection"]
+    choice = st.sidebar.selectbox("Menu", menu)
+    choice =="Connection"
 
     if choice == "Inscription":
         st.title("Page Inscription")
@@ -40,13 +39,11 @@ def presentation():
     elif choice == "Connection":
         st.title("Page Connection")
         # Logique du formulaire de connexion
-
         with st.form(key='connection_form'):
             st.subheader("Formulaire de Connection")
             email = st.text_input("Email (sans le @gmail.com)") + "@gmail.com"
             mot_de_passe = st.text_input("Mot de passe", type="password")
             submitted = st.form_submit_button("Se Connecter")
-            # Si la connexion réussit, rediriger vers home()
             if submitted:  # Assurez-vous de définir submitted dans votre logique de connexion
                 query = "SELECT * FROM utilisateurs WHERE email = %s AND mot_de_passe = %s"
                 values = (email, mot_de_passe)
@@ -54,10 +51,19 @@ def presentation():
                 result = cursor.fetchone()
                 if result:
                     st.success("Connexion réussie !")
-                    st.experimental_set_query_params(redirect="true")  # Rediriger vers la page d'accueil
+                    print(email + " est connecté")
+                    db_connection.close()
+                    art = 1  # Définir art à 1 après une connexion réussie
+                    # st.experimental_rerun()  # Redémarrer Streamlit pour charger la page d'accueil
+                    # if art == 1:
+                    #     return  # Sortie de la fonction presentation()
+                    #     home()  # Appel de la fonction home() après connexion réussie
     
     db_connection.close()
 
-    # Redirection vers la page d'accueil si le paramètre redirect est présent dans l'URL
-    if st.experimental_get_query_params().get("redirect") == "true":
-        home()
+# Appel de la fonction presentation() pour démarrer l'application
+presentation()
+
+
+
+
